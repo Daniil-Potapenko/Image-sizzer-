@@ -1,2 +1,2 @@
 # Image-sizzer-
-An application that cuts off the excess white background and reduces the image quality
+An application fow Windows that cuts off the excess white background and reduces the image quality

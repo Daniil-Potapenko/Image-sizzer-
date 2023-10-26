@@ -31,11 +31,11 @@ while True:  # The Event Loop
             for image in (values['Browse'].split(';')):
                 try:
                     fullPath = image
-                    nameOfFile = (image.split('/')[len(image.split('/')) - 1])  # получаем название файла из пути.
-                    extensionOfFile = fullPath.split('.')[len(fullPath.split('.')) - 1]  # получаем расширение файла
-                    nameWithoutExtension = nameOfFile.replace('.'+extensionOfFile, '')
+                    nameOfFile = (image.split('/')[len(image.split('/')) - 1])  #  Get file name from fullpath
+                    extensionOfFile = fullPath.split('.')[len(fullPath.split('.')) - 1]  # Get extensionOfFile from fullpath
                     path = fullPath.replace(nameOfFile, '')
 
+                    ##debug
                     # print(path)
                     # print(fullPath)
                     # print(nameOfFile)
@@ -48,27 +48,27 @@ while True:  # The Event Loop
                                                         outputMode="RGB")
                     img = cv2.cvtColor(numpy.array(img), cv2.COLOR_RGB2BGR)
 
-                    # (1) Convert to gray, and threshold
+                    # Convert to gray, and threshold
                     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     th, threshed = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY_INV)
 
-                    # (2) Morph-op to remove noise
+                    # Morph-op to remove noise
                     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
                     morphed = cv2.morphologyEx(threshed, cv2.MORPH_CLOSE, kernel)
 
-                    # (3) Find the max-area contour
+                    # Find the max-area contour
                     cnts = cv2.findContours(morphed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
                     cnt = sorted(cnts, key=cv2.contourArea)[-1]
 
-                    # (4) Crop and save it
+                    #  Crop and save it
                     x, y, w, h = cv2.boundingRect(cnt)
                     dst = img[y:y + h, x:x + w]
 
                     # create/write to file
                     cv2.imwrite(path+nameWithoutExtension+'_edited.'+extensionOfFile, dst)
-                    # (1) Open file for optimization size
+                    # Open file for optimization size
                     foo = Image.open(path+nameWithoutExtension+'_edited.'+extensionOfFile)
-                    # (2) Save with quality percent
+                    # Save with quality percent
                     foo.save(path+nameWithoutExtension+'_edited.'+extensionOfFile, quality=values[1])
                     print('File  "' + nameOfFile + '"  saved successfully, quality=' + str(values[1]) + '%')
                 except OSError as err:
